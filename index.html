@@ -1,0 +1,406 @@
+<!DOCTYPE html>
+<html lang="my">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Our Memory Lane</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <style>
+        * { 
+            margin: 0; 
+            padding: 0; 
+            box-sizing: border-box; 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif, 'Pyidaungsu'; 
+            -webkit-tap-highlight-color: transparent; 
+        }
+        
+        body { 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            min-height: 100vh; 
+            background: #09070f; /* Solid Premium Dark Theme (Liquid glass မဟုတ်ပါ) */
+            overflow: hidden; 
+        }
+
+        /* Floating Stars & Hearts Background */
+        .bg-heart { 
+            position: absolute; 
+            color: #ff2a74; 
+            font-size: 20px; 
+            animation: floatUp 5s linear infinite; 
+            bottom: -30px; 
+            z-index: 0; 
+            pointer-events: none; 
+            opacity: 0.4;
+        }
+        
+        @keyframes floatUp { 
+            0% { transform: translateY(0) rotate(0deg) scale(0.6); opacity: 0; } 
+            20% { opacity: 0.5; }
+            100% { transform: translateY(-110vh) rotate(360deg) scale(1.2); opacity: 0; } 
+        }
+
+        /* Solid Neon Card Container */
+        .card-container { 
+            position: relative; 
+            width: 90%;
+            max-width: 400px; 
+            background: #14111c; /* Solid ပြတ်သားသော အနက်ရောင် */
+            border: 2px solid #2a2438;
+            border-radius: 24px; 
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6), 0 0 20px rgba(255, 42, 116, 0.1);
+            padding: 35px 25px; 
+            text-align: center; 
+            z-index: 10; 
+            transition: transform 0.3s;
+        }
+
+        /* Progress Bar & Indicators */
+        .step-indicator {
+            font-size: 13px;
+            color: #a89cb8;
+            font-weight: 600;
+            letter-spacing: 1px;
+            margin-bottom: 8px;
+        }
+
+        .progress-container { 
+            width: 100%; 
+            background-color: #221c2e; 
+            border-radius: 20px; 
+            margin-bottom: 25px; 
+            overflow: hidden; 
+            padding: 2px;
+        }
+        
+        .progress-bar { 
+            width: 20%; 
+            height: 8px; 
+            background: #ff2a74; 
+            border-radius: 20px;
+            box-shadow: 0 0 10px #ff2a74;
+            transition: width 0.4s ease-in-out; 
+        }
+
+        /* Typography */
+        h2 {
+            font-size: 24px;
+            color: #ffffff;
+            margin-bottom: 25px;
+            line-height: 1.5;
+            min-height: 72px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        h3 {
+            font-size: 26px;
+            color: #ff2a74;
+            margin-bottom: 20px;
+            font-weight: 700;
+        }
+
+        /* GIF Container Styling */
+        .gif-container { 
+            width: 160px; 
+            height: 160px; 
+            margin: 0 auto 30px auto; 
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.5);
+            border: 2px solid #2a2438;
+        }
+        .gif-container img { 
+            width: 100%; 
+            height: 100%; 
+            object-fit: cover; 
+        }
+
+        /* Button Groups */
+        .btn-group { 
+            position: relative; 
+            min-height: 70px; 
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            gap: 20px; 
+        }
+        
+        button { 
+            padding: 12px 28px; 
+            font-weight: 700; 
+            font-size: 16px;
+            border: none; 
+            border-radius: 50px; 
+            cursor: pointer; 
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s; 
+        }
+        
+        .primary-btn { 
+            background: #ff2a74; 
+            color: white; 
+            box-shadow: 0 5px 15px rgba(255, 42, 116, 0.4);
+        }
+        .primary-btn:hover {
+            transform: scale(1.05);
+            background: #ff4185;
+        }
+        
+        .secondary-btn { 
+            background: #221c2e; 
+            color: #c5bad3; 
+            border: 1px solid #352b46;
+        }
+        .secondary-btn:hover {
+            background: #2d253d;
+            color: #ffffff;
+        }
+
+        /* Fullscreen Hook */
+        .fullscreen-active { 
+            position: fixed !important; 
+            top: 0; 
+            left: 0; 
+            width: 100vw; 
+            height: 100vh; 
+            z-index: 9999; 
+            border-radius: 0; 
+            font-size: 36px; 
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #ff2a74 !important;
+        }
+
+        /* Success & Result Screen */
+        #captureArea {
+            padding: 15px 5px;
+        }
+        .result-item { 
+            font-size: 15px; 
+            margin: 14px 0; 
+            border-bottom: 1px dashed #2a2438; 
+            padding-bottom: 10px; 
+            text-align: left; 
+            color: #c5bad3;
+        }
+        .result-answer {
+            float: right; 
+            color: #ff2a74;
+            font-weight: bold;
+        }
+        
+        .download-btn {
+            width: 100%; 
+            margin-top: 25px;
+            background: #00b4d8;
+            color: #fff;
+            box-shadow: 0 5px 15px rgba(0, 180, 216, 0.3);
+        }
+        .download-btn:hover {
+            background: #00c4eb;
+        }
+    </style>
+</head>
+<body>
+
+    <audio id="bgMusic">
+        <source src="https://www.image2url.com/r2/default/audio/1779698343547-c1b15876-87d4-442d-88ad-a4f4cdf99bcc.mp3" type="audio/mpeg">
+    </audio>
+
+    <div id="heartsContainer"></div>
+
+    <div class="card-container" id="mainCard">
+        <div class="step-indicator" id="stepText">Step 1 of 5</div>
+        <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
+        <h2 id="questionText">Do You Still Love Me ?</h2>
+        <div class="gif-container"><img id="statusGif" src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNXoxZm0xaXY2MTM3M2c1Zm1ibjdsazFzNHhkYnJxczRrYjhpdDB1NiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/6C9gvbueaPF8LGMHsQ/giphy.gif" alt="Status Emotion"></div>
+        <div class="btn-group" id="btnGroup">
+            <button id="yesBtn" class="primary-btn" onclick="handleInteraction(true)">Yes, I Still </button>
+            <button id="noBtn" class="secondary-btn">No</button>
+        </div>
+    </div>
+
+    <div class="card-container" id="successScreen" style="display: none;">
+        <div id="captureArea">
+            <h3>💖 I still love You baby <br> Please Come Back</h3>
+            <div class="gif-container">
+                <img src="https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOW9xdG5ydWtvZHo1NzV4NzR5dzRhcmVzZHYyYjNpcWNjNjlveG1waSZlcD12MV9naWZzX3NlYXJjaCZjdD1n/4N1wOi78ZGzSB6H7vK/giphy.gif" alt="Success Love Match">
+            </div>
+            <div id="summaryList"></div>
+        </div>
+        <button class="primary-btn download-btn" onclick="saveToPNG()">ဘာဖြေခဲ့လဲ Save ပြီးပို့ပေးနော်</button>
+    </div>
+
+    <script>
+        const audio = document.getElementById("bgMusic");
+        const steps = [
+            { question: "Do You Still Love Me ?", yes: "Yes, I Still", no: "No", gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExNXoxZm0xaXY2MTM3M2c1Zm1ibjdsazFzNHhkYnJxczRrYjhpdDB1NiZlcD12MV9naWZzX3NlYXJjaCZjdD1n/6C9gvbueaPF8LGMHsQ/giphy.gif", type: "shrink" },
+            { question: "စောင့်နေခဲ့တာလား ? ", yes: "ဟုတ်တယ်", no: "မဟုတ်ပါဘူး", gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExOHlvMnJvMTVyMXh3bHNqNmRiN3p5YjU5OGxyMTdnanNnOHZicjdhciZlcD12MV9naWZzX3NlYXJjaCZjdD1n/3X9zeZ89TDKqcuCg0L/giphy.gif", type: "run" },
+            { question: "ကိုယ်တို့ပြန်ချစ်ကြမယ်လေ နော်", yes: "ဟုတ်ကဲ့", no: "မဖြစ်နိုင်ပါဘူး", gif: "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3c3B0NzN5NzlzNjNsbGNmaGliYXA0MjRrajR6ZjlocXF0Zmt2dmkyayZlcD12MV9naWZzX3NlYXJjaCZjdD1n/Zl7u48zLVFgLpRwq6f/giphy.gif", type: "fade" },
+            { question: "သတိရနေခဲ့လား ဟင် ?", yes: "Everytime", no: "Sometime", gif: "https://media.giphy.com/media/v1.Y2lkPTc5MGI3NjExMDE3dWxuaG5lbWxzcHJwMnNwMjNrcGxrMjNhdWR5ZXN0ZWF4bnNlciZlcD12MV9naWZzX3NlYXJjaCZjdD1n/2Jl7a8ixNlNHa/giphy.gif", type: "fullscreen" },
+            { question: "ဒါဆို ပြန်လာခဲ့ပါနော် ..", yes: "လာမှာပေါ့", no: "တော်ပါပြီ", gif: "https://media.giphy.com/media/v1.Y2lkPWVjZjA1ZTQ3ejc4d3MwZW4zb3p0YnFobHN3aHNmcWlmcHhmZ3IwMmRmZ2hxZ2hrMCZlcD12MV9naWZzX3NlYXJjaCZjdD1n/rCylHTntc3KQTyaBra/giphy.gif", type: "magnet" }
+        ];
+
+        let currentStep = 0, yesScale = 1, noScale = 1, userAnswers = []
+        function playMusic() {
+            if (audio.paused) {
+                audio.play().catch(e => console.log("Audio playback initiated"));
+            }
+        }
+
+        function handleInteraction(isYes) {
+            playMusic();
+            if (isYes) {
+                nextStep(true);
+            }
+        }
+
+        function nextStep(isYes) {
+            const yesBtn = document.getElementById('yesBtn');
+            yesBtn.classList.remove('fullscreen-active');
+            
+            userAnswers.push({ q: steps[currentStep].question, a: isYes ? steps[currentStep].yes : steps[currentStep].no });
+            
+            currentStep++;
+            if (currentStep < steps.length) {
+                updateCard();
+            } else {
+                showResult();
+            }
+        }
+
+        function handleNoTrigger() {
+            playMusic();
+            const step = steps[currentStep];
+            const yesBtn = document.getElementById('yesBtn');
+            const noBtn = document.getElementById('noBtn');
+
+            // 🌟 အဆင့် ၃ (index 2) အတွက် ကန့်သတ်ချက်- "ဟုတ်ကဲ့" နှိပ်မှသာ နောက်တစ်ဆင့်သွားမည်။
+            if (currentStep === 2) { 
+                noBtn.style.opacity = '0';
+                noBtn.style.pointerEvents = 'none';
+                return; 
+            }
+
+            if (step.type === "shrink") { 
+                yesScale += 0.3; 
+                yesBtn.style.transform = `scale(${yesScale})`; 
+                noScale -= 0.15; 
+                if(noScale < 0.2) noScale = 0.2;
+                noBtn.style.transform = `scale(${noScale})`; 
+            }
+            else if (step.type === "fade") {
+                noBtn.style.opacity = '0';
+                setTimeout(() => nextStep(true), 400);
+            }
+            else if (step.type === "fullscreen") {
+                yesBtn.classList.add('fullscreen-active');
+            }
+            else if (step.type === "magnet") { 
+                noBtn.style.opacity = '0';
+                yesBtn.style.transform = 'scale(1.6)';
+                setTimeout(() => nextStep(true), 400);
+            }
+        }
+
+        const noBtn = document.getElementById('noBtn');
+        const yesBtn = document.getElementById('yesBtn');
+
+        noBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            if (steps[currentStep].type !== "run") {
+                handleNoTrigger();
+            }
+        });
+
+        // 🌟 ခလုတ်ကို ဖုန်းမျက်နှာပြင် Frame တစ်ခုလုံးအပြည့် (Viewport Window) ပတ်ပြေးခိုင်းခြင်း
+        function runEscape() {
+            if (steps[currentStep].type === "run") {
+                playMusic();
+                noBtn.style.position = 'fixed';
+                noBtn.style.zIndex = '999';
+                
+                const btnWidth = noBtn.offsetWidth || 100;
+                const btnHeight = noBtn.offsetHeight || 45;
+                
+                const maxX = window.innerWidth - btnWidth - 20;
+                const maxY = window.innerHeight - btnHeight - 20;
+                
+                const randomX = Math.max(20, Math.floor(Math.random() * maxX));
+                const randomY = Math.max(20, Math.floor(Math.random() * maxY));
+                
+                noBtn.style.left = randomX + 'px';
+                noBtn.style.top = randomY + 'px';
+            }
+        }
+
+        noBtn.addEventListener('mouseover', runEscape);
+        noBtn.addEventListener('touchstart', (e) => {
+            if(steps[currentStep].type === "run") {
+                e.preventDefault();
+                runEscape();
+            }
+        });
+
+        function updateCard() {
+            const s = steps[currentStep];
+            document.getElementById('questionText').innerText = s.question;
+            yesBtn.innerText = s.yes; 
+            noBtn.innerText = s.no;
+            document.getElementById('statusGif').src = s.gif;
+            document.getElementById('progressBar').style.width = ((currentStep + 1) / steps.length) * 100 + "%";
+            document.getElementById('stepText').innerText = `Step ${currentStep + 1} of ${steps.length}`;
+            
+            yesBtn.style.transform = "scale(1)"; 
+            noBtn.style.transform = "scale(1)"; 
+            noBtn.style.opacity = "1"; 
+            noBtn.style.pointerEvents = "auto";
+            noBtn.style.position = 'static';
+            noBtn.style.left = 'auto';
+            noBtn.style.top = 'auto';
+            yesScale = 1;
+            noScale = 1;
+        }
+
+        function showResult() {
+            document.getElementById('mainCard').style.display = 'none';
+            document.getElementById('successScreen').style.display = 'block';
+            document.getElementById('summaryList').innerHTML = userAnswers.map((item, i) => 
+                `<div class="result-item">${i+1}. ${item.q} <span class="result-answer">${item.a}</span></div>`
+            ).join('');
+        }
+
+        function saveToPNG() {
+            const area = document.getElementById('captureArea');
+            const originalBg = area.style.background;
+            area.style.background = '#14111c';
+            area.style.padding = '20px';
+            
+            html2canvas(area, { backgroundColor: '#14111c', scale: 2 }).then(canvas => {
+                area.style.background = originalBg;
+                area.style.padding = '15px 5px';
+                let link = document.createElement('a');
+                link.download = 'Our_Love_Agreement.png';
+                link.href = canvas.toDataURL('image/png');
+                link.click();
+            });
+        }
+
+        // Background Hearts Generator
+        setInterval(() => {
+            let h = document.createElement('div');
+            h.className = 'bg-heart';
+            const icons = ['❤️', '💜', '💖', '✨'];
+            h.innerHTML = icons[Math.floor(Math.random() * icons.length)];
+            h.style.left = Math.random() * 100 + 'vw';
+            h.style.fontSize = (Math.random() * 15 + 15) + 'px';
+            h.style.animationDuration = (Math.random() * 3 + 4) + 's';
+            document.getElementById('heartsContainer').appendChild(h);
+            setTimeout(() => h.remove(), 5000);
+        }, 700);
+    </script>
+</body>
+</html>
